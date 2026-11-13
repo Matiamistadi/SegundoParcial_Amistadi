@@ -10,15 +10,12 @@ class MainActivity : ComponentActivity() {
     private val model: ProgramaModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Debe aplicarse antes de crear el ViewModel, que dispara la carga automática.
         if (savedInstanceState == null && intent.hasExtra("servicio_disponible")) {
-            model.mesa.disponible = intent.getBooleanExtra("servicio_disponible", true)
+            (application as JornadasApp).servicios.mesa.disponible =
+                intent.getBooleanExtra("servicio_disponible", true)
             intent.removeExtra("servicio_disponible")
         }
         setContent { Portada(model) }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        model.recargar()
     }
 }

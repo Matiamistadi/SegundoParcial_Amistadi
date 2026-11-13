@@ -16,6 +16,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 fun Portada(model: ProgramaModel) {
     var seccion by rememberSaveable { mutableStateOf("Programa") }
     var detalle by rememberSaveable { mutableStateOf<String?>(null) }
+    var dia by rememberSaveable { mutableIntStateOf(0) }
+    var tema by rememberSaveable { mutableStateOf("Todos") }
     val charlas by model.charlas.collectAsStateWithLifecycle()
     BackHandler(detalle != null || seccion != "Programa") {
         if (detalle != null) detalle = null else seccion = "Programa"
@@ -49,7 +51,7 @@ fun Portada(model: ProgramaModel) {
                 } else {
                     Text(seccion, style = MaterialTheme.typography.headlineLarge)
                     when (seccion) {
-                        "Programa" -> Catalogo(model) { detalle = it }
+                        "Programa" -> Catalogo(model, dia, tema, { dia = it }, { tema = it }) { detalle = it }
                         "Mi agenda" -> {
                             val guardadas = charlas.filter { it.favorita }
                             if (guardadas.isEmpty()) Text("Todavía no agregaste charlas.")

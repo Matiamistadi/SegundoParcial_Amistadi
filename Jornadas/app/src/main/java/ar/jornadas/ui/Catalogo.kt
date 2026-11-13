@@ -12,24 +12,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ar.jornadas.data.Charla
 
 @Composable
-fun Catalogo(model: ProgramaModel, abrir: (String) -> Unit) {
-    LaunchedEffect(Unit) { model.recargar() }
-    val dia by model.dia.collectAsStateWithLifecycle()
-    var tema by remember { mutableStateOf("Todos") }
+fun Catalogo(model: ProgramaModel, dia: Int, tema: String, elegirDia: (Int) -> Unit,
+    elegirTema: (String) -> Unit, abrir: (String) -> Unit) {
     val fichas by model.charlas.collectAsStateWithLifecycle()
     val aviso by model.aviso.collectAsStateWithLifecycle()
     val cargando by model.cargando.collectAsStateWithLifecycle()
     val hayEdicion by model.hayEdicion.collectAsStateWithLifecycle()
-    Selector(listOf("Ambos días", "Día 1", "Día 2"), dia) { model.dia.value = it }
+    Selector(listOf("Ambos días", "Día 1", "Día 2"), dia, elegirDia)
     val temas = listOf("Todos", "Android", "Datos", "Calidad")
-    Selector(temas, temas.indexOf(tema)) { tema = temas[it] }
-    TextButton(onClick = model::recargar) { Text("Actualizar") }
+    Selector(temas, temas.indexOf(tema)) { elegirTema(temas[it]) }
+    TextButton(onClick = model::actualizar) { Text("Actualizar") }
     if (cargando) LinearProgressIndicator(Modifier.fillMaxWidth())
     when (hayEdicion) {
         null -> Unit
         false -> if (aviso.isNotEmpty()) {
             Text("$aviso y todavía no hay datos guardados.")
-            OutlinedButton(onClick = model::recargar) { Text("Reintentar") }
+            OutlinedButton(onClick = model::actualizar) { Text("Reintentar") }
         }
         true -> {
             if (aviso.isNotEmpty()) Text("Sin conexión: se muestran los datos guardados.")
